@@ -9,4 +9,4 @@ Java microservice template
 ## Developing
 
 - [Maven](https://maven.apache.org/index.html)
-- IPC interfaces are standalone files in the resources folder
+- `src/main/resources/interfaces/*/*` are standalone IPC interface descriptions
