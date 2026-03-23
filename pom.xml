@@ -29,6 +29,12 @@
       <version>0.11</version>
     </dependency>
     <dependency>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-annotations</artifactId>
+      <version>4.9.8</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
       <groupId>tools.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
     </dependency>
@@ -46,6 +52,10 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.13.0</version>
         <configuration>
+          <compilerArgs>
+            <arg>-Werror</arg>
+            <arg>-Xlint:all</arg>
+          </compilerArgs>
           <release>25</release>
         </configuration>
       </plugin>
@@ -122,8 +132,7 @@
         </executions>
       </plugin>
       <!--TODO
-                nested ksy files?, jdk version to manifest, lint
-      (jspecify)  -->
+      jdk version in manifest, spotbugs anno, osvscanner -->
       <!-- test -->
       <!-- <plugin>
         <groupId>org.owasp</groupId>
@@ -195,6 +204,31 @@
             <excludeRoot>${app.generatedDirectory}</excludeRoot>
           </excludeRoots>
           <printFailingErrors>true</printFailingErrors>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.9.8.2</version>
+        <executions>
+          <execution>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <effort>Max</effort>
+          <onlyAnalyze>${project.groupId}.-</onlyAnalyze>
+          <threshold>Low</threshold>
+          <plugins>
+            <plugin>
+              <groupId>com.h3xstream.findsecbugs</groupId>
+              <artifactId>findsecbugs-plugin</artifactId>
+              <version>1.12.0</version>
+            </plugin>
+          </plugins>
         </configuration>
       </plugin>
     </plugins>

@@ -1,4 +1,4 @@
-package suppliers;
+package localhost.suppliers;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -30,15 +30,14 @@ public final class Udp implements Supplier<byte[]>, AutoCloseable {
     public byte[] get() {
         try {
             socket.receive(new DatagramPacket(new byte[1], 0)); // TODO
-            return new byte[1];
+            return new byte[0];
         } catch (IOException e) {
-            return null;
+            return new byte[0];
         }
     }
 
     @Override
-    public void close() throws Exception {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'close'");
+    public void close() {
+        socket.close();
     }
 }

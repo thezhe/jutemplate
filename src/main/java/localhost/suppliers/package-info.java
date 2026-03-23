@@ -1,4 +1,4 @@
 /**
  * Implementations of {@link java.util.function.Supplier}.
  */
-package suppliers;
+package localhost.suppliers;

@@ -1,3 +1,4 @@
+package localhost;
 
 /**
  * Main-Class.
@@ -31,5 +32,4 @@ public final class App {
         // Logger.getGlobal().severe(e.getMessage());
         // }
     }
-
 }
