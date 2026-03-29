@@ -9,4 +9,4 @@ Java microservice template
 ## Developing
 
 - [Maven](https://maven.apache.org/index.html)
-- `src/main/resources/interfaces/*/*` are standalone IPC interface descriptions
+- `src/main/resources/interfaces/*/*` are standalone IPC interfaces

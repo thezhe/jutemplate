@@ -5,4 +5,6 @@ meta:
   id: msg
 seq:
   - id: value
-    type: f8
+    type: str
+    encoding: ASCII
+    size: 2

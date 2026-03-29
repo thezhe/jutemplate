@@ -1,20 +1,14 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "title": "Config",
+  "description": "Schema of optional config.json is application CWD",
   "type": "object",
-  "required": [
-    "host",
-    "port"
-  ],
   "properties": {
-    "host": {
-      "description": "IP or hostname",
-      "type": "string"
-    },
-    "port": {
-      "type": "integer",
-      "minimum": 0,
-      "maximum": 65535
+    "uri": {
+      "description": "jutemplate://HOST:PORT",
+      "default": "jutemplate://127.0.0.1:50000",
+      "type": "string",
+      "format": "uri"
     }
   }
 }
