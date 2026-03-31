@@ -1,27 +1,46 @@
 package localhost;
 
-import java.io.File;
 import java.io.IOException;
 import interfaces.ksy.Msg;
+
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
 import com.google.common.flogger.FluentLogger;
 
+import edu.umd.cs.findbugs.annotations.DefaultAnnotation;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import interfaces.schema.Config;
 import io.kaitai.struct.ByteBufferKaitaiStream;
-import localhost.suppliers.Udp;
+import io.lettuce.core.RedisClient;
+import io.lettuce.core.pubsub.RedisPubSubAdapter;
 import tools.jackson.databind.json.JsonMapper;
 
 /**
  * Main-Class.
  */
+@DefaultAnnotation(NonNull.class)
 public final class App {
-
     /**
      * Flogger.
      */
     private static final FluentLogger LOG = FluentLogger.forEnclosingClass();
+
+    public static final class Listener
+            extends RedisPubSubAdapter<String, String> {
+        @Override
+        public void message(final String channel, final String message) {
+            try (var stream = new ByteBufferKaitaiStream(
+                    message.getBytes(Charset.defaultCharset()))) { // TODO
+                                                                   // encoding?
+                final var msg = new Msg(stream);
+                IO.println(JsonMapper.shared().writeValueAsString(msg));
+            } catch (IOException e) {
+                LOG.atSevere().withCause(e);
+            }
+        }
+    }
 
     /**
      * @param args
@@ -29,17 +48,14 @@ public final class App {
      */
     public static void main(final String... args) {
         final var configPath = Path.of("./config.json");
-        final var config = Files.exists(configPath) ? JsonMapper.shared()
-                .readValue(new File("config.json"), Config.class)
+        final var config = Files.exists(configPath)
+                ? JsonMapper.shared().readValue(configPath, Config.class)
                 : new Config();
-        final var uri = config.getUri().get();
-        try (var udp = new Udp(uri.getPort(), uri.getHost())) {
-            try (var stream = new ByteBufferKaitaiStream(udp.get())) {
-                final var msg = new Msg(stream);
-                IO.println(JsonMapper.shared().writeValueAsString(msg));
-            }
-        } catch (IOException e) {
-            LOG.atSevere().withCause(e);
+        try (var client = RedisClient.create(config.getUri().orElseThrow());
+                var pubSubConnection = client.connectPubSub()) {
+            pubSubConnection.addListener(new Listener());
+            final var pubSub = pubSubConnection.sync();
+            pubSub.subscribe(config.getChannel().orElseThrow());
         }
     }
 
